@@ -1,0 +1,19 @@
+[project]
+name = "competition_monitoring"
+version = "0.1.0"
+description = "Automated Control center for companies"
+authors = [
+    {name = "soulLeo77", email = "176849955+soulLeo77@users.noreply.github.com"},
+]
+dependencies = ["patchright==1.56", "pydantic>=2.12.5"]
+requires-python = ">=3.13, <3.14"
+readme = "README.md"
+license = {text = "proprietary"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[tool.pdm]
+distribution = true
