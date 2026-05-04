@@ -27,6 +27,15 @@ def get_rating(text: str) -> str | None:
     return _match.group(1)
 
 
+def get_review_count(text: str) -> str | None:
+    review_count_pattern = compile(r"\((\d+)\)")
+    _match = review_count_pattern.search(text)
+    if not _match:
+        return None
+
+    return _match.group(1)
+
+
 def get_prices_and_currency_fb(
     prices: list[str],
 ) -> tuple[Decimal, Decimal | None, str]:

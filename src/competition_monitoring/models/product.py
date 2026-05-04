@@ -10,7 +10,7 @@ class Product(BaseModel):
     currency: str
     availability: bool
     rating: str | None
-    review_count: int | None
+    review_count: str | None
     url: str
     source: str
     scraped_at: str

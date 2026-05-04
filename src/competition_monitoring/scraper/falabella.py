@@ -8,6 +8,7 @@ from ..util import (
     determine_availability,
     get_rating,
     save_data,
+    get_review_count,
 )
 from ..models.product import Product
 from datetime import datetime
@@ -130,8 +131,12 @@ class FalabellaScraper:
         availability: bool = determine_availability(classes_texts)
 
         rating_container: Locator = basic_info_container.locator("div.rr-rating-stars")
-        raw_rating = await rating_container.locator("> div > span").first.inner_text()
-        rating = get_rating(raw_rating)
+        raw_rating: str = await rating_container.locator(
+            "> div > span"
+        ).first.inner_text()
+        rating: str | None = get_rating(raw_rating)
+
+        review_count: str | None = get_review_count(raw_rating)
 
         await product_page.close()
 
@@ -144,7 +149,7 @@ class FalabellaScraper:
             currency=currency,
             availability=availability,
             rating=rating,
-            review_count=None,
+            review_count=review_count,
             url=product_link,
             source="falabella",
             scraped_at=datetime.now().strftime("%Y-%m-%d_%H-%M-%S"),
