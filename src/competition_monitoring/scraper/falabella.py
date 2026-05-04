@@ -3,13 +3,14 @@ from asyncio import gather
 
 from patchright.async_api import BrowserContext, Locator, Page
 
-from ..util import (
-    get_prices_and_currency_fb,
+from ..util.falabella import (
+    get_prices_and_currency,
     determine_availability,
     get_rating,
-    save_data,
     get_review_count,
 )
+from ..util.files import save_data
+from ..paths import FALABELLA_DATA
 from ..models.product import Product
 from datetime import datetime
 from typing import Any
@@ -64,7 +65,9 @@ class FalabellaScraper:
             data.extend([item.model_dump() for item in batch_data])
 
         save_data(
-            data, f"fb_products_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.json"
+            data=data,
+            filename=f"fb_products_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.json",
+            destination_dir=FALABELLA_DATA,
         )
 
     async def get_product_data(self, product_link: str) -> Product:
@@ -100,7 +103,7 @@ class FalabellaScraper:
         price: Decimal
         original_price: Decimal | None
         currency: str
-        price, original_price, currency = get_prices_and_currency_fb(prices_list)
+        price, original_price, currency = get_prices_and_currency(prices_list)
 
         discount_container: Locator = prices_container.locator(
             "span[id^='testId-Pod-badges-']"
@@ -144,7 +147,7 @@ class FalabellaScraper:
             name=name,
             brand=brand,
             price=str(price),
-            original_price=str(original_price),
+            original_price=str(original_price) if original_price else None,
             discount=discount,
             currency=currency,
             availability=availability,

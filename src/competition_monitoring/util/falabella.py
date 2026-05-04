@@ -1,8 +1,4 @@
 from re import compile
-from pathlib import Path
-from ..paths import FALABELLA_DATA
-from typing import Any
-from json import dump
 from decimal import Decimal
 from .prices import parse_price, determine_currency
 
@@ -36,7 +32,7 @@ def get_review_count(text: str) -> str | None:
     return _match.group(1)
 
 
-def get_prices_and_currency_fb(
+def get_prices_and_currency(
     prices: list[str],
 ) -> tuple[Decimal, Decimal | None, str]:
     count_prices = len(prices)
@@ -63,9 +59,3 @@ def get_prices_and_currency_fb(
     currency: str = determine_currency(_price)
 
     return price, original_price, currency
-
-
-def save_data(data: list[dict[str, Any]], filename: str) -> None:
-    file_path: Path = FALABELLA_DATA / filename
-    with file_path.open("w", encoding="utf-8") as f:
-        dump(data, f, ensure_ascii=False, indent=4)
