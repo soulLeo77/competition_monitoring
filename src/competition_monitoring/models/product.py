@@ -1,18 +1,16 @@
-from datetime import datetime
-
 from pydantic import BaseModel
 
 
 class Product(BaseModel):
     name: str
     brand: str
-    price: float
-    original_price: float | None
-    discount: float | None
+    price: str
+    original_price: str | None
+    discount: str | None
     currency: str
-    availability: str
-    rating: float | None
+    availability: bool
+    rating: str | None
     review_count: int | None
     url: str
     source: str
-    scraped_at: datetime
+    scraped_at: str
