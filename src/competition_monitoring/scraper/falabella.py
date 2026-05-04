@@ -56,7 +56,7 @@ class FalabellaScraper:
         return tuple(product_links)
 
     async def get_product_data_batch(
-        self, product_links: list[str], batch_size: int = 10
+        self, product_links: tuple[str, ...], batch_size: int = 10
     ) -> None:
         data: list[dict[str, Any]] = list()
         for i in range(0, len(product_links), batch_size):
@@ -111,7 +111,6 @@ class FalabellaScraper:
         discount: str | None = None
         if await discount_container.count() != 0:
             discount = await discount_container.inner_text()
-        discount = None
 
         availability_container: Locator = specifications_container.locator(
             "div.dlv-opt-wrapper"
