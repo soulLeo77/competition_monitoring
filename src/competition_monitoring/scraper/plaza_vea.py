@@ -1,21 +1,22 @@
-from decimal import Decimal
 from asyncio import gather
 from datetime import datetime
+from decimal import Decimal
 from typing import Any
 
-from patchright.async_api import BrowserContext, Page, Locator
+from patchright.async_api import BrowserContext, Locator, Page
 
+from ..interface.scraper import BaseScraper
+from ..models.product import Product
+from ..paths import PLAZA_VEA_DATA
+from ..util.files import save_data
 from ..util.plaza_vea import (
-    get_prices_and_currency,
     determine_availability,
     get_discount,
+    get_prices_and_currency,
 )
-from ..util.files import save_data
-from ..paths import PLAZA_VEA_DATA
-from ..models.product import Product
 
 
-class PlazaVeaScraper:
+class PlazaVeaScraper(BaseScraper):
 
     BASE_URL: str = "https://www.plazavea.com.pe/"
 

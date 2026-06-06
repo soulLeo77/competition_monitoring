@@ -1,22 +1,23 @@
-from decimal import Decimal
 from asyncio import gather
+from datetime import datetime
+from decimal import Decimal
+from typing import Any
 
 from patchright.async_api import BrowserContext, Locator, Page
 
+from ..interface.scraper import BaseScraper
+from ..models.product import Product
+from ..paths import FALABELLA_DATA
 from ..util.falabella import (
-    get_prices_and_currency,
     determine_availability,
+    get_prices_and_currency,
     get_rating,
     get_review_count,
 )
 from ..util.files import save_data
-from ..paths import FALABELLA_DATA
-from ..models.product import Product
-from datetime import datetime
-from typing import Any
 
 
-class FalabellaScraper:
+class FalabellaScraper(BaseScraper):
 
     BASE_URL: str = "https://www.falabella.com.pe/falabella-pe/"
 
@@ -46,7 +47,7 @@ class FalabellaScraper:
 
         await page.wait_for_load_state("domcontentloaded")
 
-    async def get_product_links(self) -> tuple[str, ...]:
+    async def get_products_links(self) -> tuple[str, ...]:
         page: Page = await self._get_page()
 
         products_container: Locator = page.locator("div#testId-searchResults-products")
