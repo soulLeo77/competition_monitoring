@@ -47,6 +47,6 @@ async def test_oechsle(patched_headed_context: BrowserContext) -> None:
     await scraper.go_to_product_page("laptops")
     product_links: tuple[str, ...] = await scraper.get_products_links()
 
-    # await scraper.get_product_data_batch(product_links, batch_size=5)
+    await scraper.get_product_data_batch(product_links, batch_size=5)
 
     assert product_links

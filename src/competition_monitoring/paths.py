@@ -3,7 +3,7 @@ from pathlib import Path
 _PROYECT_DIR: Path = Path(__file__).parents[2]
 _DATA_DIR: Path = _PROYECT_DIR / ".data"
 _PRODUCTS_DATA_DIR: Path = _DATA_DIR / "products"
-REPORTS_DIR: Path = _PROYECT_DIR / "reports"
+REPORTS_DIR: Path = _DATA_DIR / "reports"
 FALABELLA_DATA: Path = _PRODUCTS_DATA_DIR / "falabella"
 RIPLEY_DATA: Path = _PRODUCTS_DATA_DIR / "ripley"
 PLAZA_VEA_DATA: Path = _PRODUCTS_DATA_DIR / "plaza_vea"
