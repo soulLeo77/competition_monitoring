@@ -17,8 +17,8 @@ logger = logging.getLogger(__name__)
 SCRAPER_REGISTRY: dict[str, type[BaseScraper]] = {
     "falabella": FalabellaScraper,  # type: ignore
     "plaza_vea": PlazaVeaScraper,
-    # "ripley": RipleyScraper,
-    # "oechsle": OechsleScraper,
+    "ripley": RipleyScraper,
+    "oechsle": OechsleScraper,
 }
 
 REQUIRED_METHODS = ["go_to_product_page", "get_products_links", "get_product_data"]
