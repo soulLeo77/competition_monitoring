@@ -1,14 +1,17 @@
-from patchright.async_api import BrowserContext, Page, Locator
-from ..util.ripley import get_prices_and_currency, get_rating, get_review_count
-from typing import Any
 from asyncio import gather
-from ..models.product import Product
 from datetime import datetime
-from ..util.files import save_data
+from typing import Any
+
+from patchright.async_api import BrowserContext, Frame, Locator, Page, Request
+
+from ..interface.scraper import BaseScraper
+from ..models.product import Product
 from ..paths import RIPLEY_DATA
+from ..util.files import save_data
+from ..util.ripley import get_prices_and_currency, get_rating, get_review_count
 
 
-class RipleyScraper:
+class RipleyScraper(BaseScraper):
 
     BASE_URL: str = "https://simple.ripley.com.pe/"
 
@@ -29,10 +32,14 @@ class RipleyScraper:
     async def go_to_product_page(self, category: str) -> None:
         page: Page = await self._get_page()
 
+        # await self._cloudflare_handler(page)
         await page.goto(self.BASE_URL)
+        await page.wait_for_load_state("domcontentloaded")
         await page.wait_for_timeout(1500)
+        await self._verify_cloudflare_warning(page)
 
         search_bar: Locator = page.locator("input[role='searchbox']")
+        await search_bar.wait_for(state="visible")
         await search_bar.fill(category)
         await page.keyboard.press("Enter")
 
@@ -71,6 +78,7 @@ class RipleyScraper:
         product_page: Page = await self.context.new_page()
         await product_page.goto(product_link)
         await product_page.wait_for_load_state("domcontentloaded")
+        await self._verify_cloudflare_warning(product_page)
 
         data_section: Locator = product_page.locator(
             "div[data-testid='product-details'] div[class*='product-summary-container']"
@@ -105,12 +113,19 @@ class RipleyScraper:
         raiting_container: Locator = product_page.locator(
             "div[class*='rating-and-reviews--content'] div.rating-and-reviews--summary-rating"
         )
-        raw_rating: str = await raiting_container.locator("strong").inner_text()
-        rating: str | None = get_rating(raw_rating)
+        raw_rating: str | None = None
+        raw_review_count: str | None = None
 
-        raw_review_count: str = await raiting_container.locator("span").inner_text()
-        review_count: str | None = get_review_count(raw_review_count)
+        if await raiting_container.count() > 0:
+            raw_rating = await raiting_container.locator("strong").inner_text()
+            raw_review_count = await raiting_container.locator("span").inner_text()
 
+        rating: str | None = get_rating(raw_rating) if raw_rating else None
+        review_count: str | None = (
+            get_review_count(raw_review_count) if raw_review_count else None
+        )
+
+        await product_page.wait_for_timeout(2000)
         await product_page.close()
 
         return Product(
@@ -127,3 +142,11 @@ class RipleyScraper:
             source="Ripley",
             scraped_at=datetime.now().strftime("%Y-%m-%d_%H-%M-%S"),
         )
+
+    async def _verify_cloudflare_warning(self, page: Page) -> None:
+        element = page.locator("*", has_text="seguridad en curso").nth(0)
+        is_visible = await element.is_visible()
+
+        if is_visible:
+            await element.wait_for(state="detached")
+            await element.wait_for(state="hidden")
